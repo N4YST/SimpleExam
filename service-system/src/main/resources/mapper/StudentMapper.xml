@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nayst.system.mapper.StudentMapper">
+    <select id="getCourseIdByUserId" resultType="String">
+        select course_id from student_course
+        where user_id = #{userId};
+    </select>
+    <select id="getCourseNameByCourseId" resultType="String">
+        select name from course
+        <where>
+            id = #{courseId} and status = 1 and is_deleted = 0
+            <if test="courseName != null and courseName != ''">
+                and name like concat('%', #{courseName}, '%')
+            </if>
+        </where>
+    </select>
+    <select id="getTeacherNameByCourseId" resultType="String">
+        select name from user u left join teacher on user_id = u.id
+        where course_id = #{courseId};
+    </select>
+    <select id="getExamByCourseId" resultType="map">
+        select start_time,TIMESTAMPDIFF(MINUTE,start_time,end_time) as time,name from exam
+        where course_id = #{courseId}
+        and status = 1 and is_deleted = 0;
+    </select>
+    <select id="getCourseIdByCourseName" resultType="String">
+        select id from course
+        where name = #{courseName}
+        and status = 1 and is_deleted = 0;
+    </select>
+    <select id="getPaperIdByCourseId" resultType="String">
+        select paper_id from exam
+        where course_id = #{courseId} and name = #{name}
+        and status = 1 and is_deleted = 0;
+    </select>
+    <select id="getQuestionIdListByPaperId" resultType="map">
+        select xzt_id_1, xzt_id_2, xzt_id_3, xzt_id_4, xzt_id_5,
+               tkt_id_1, tkt_id_2, tkt_id_3, tkt_id_4, tkt_id_5,
+               pdt_id_1, pdt_id_2, pdt_id_3, pdt_id_4, pdt_id_5,
+               zgt_id_1, zgt_id_2
+        from paper
+        where id = #{paperId}
+        and status = 1 and is_deleted = 0;
+    </select>
+    <select id="getQuestionById" resultType="map">
+        select * from ${table}
+        where id = #{id}
+    </select>
+    <insert id="insertQuestion">
+        insert into answer
+        (id, paper_id, user_id, question_id, question_type, answer, choice, score)
+        value
+        (null, #{paperId}, #{userId}, #{id}, #{type}, #{answer}, #{choice}, #{score})
+    </insert>
+    <select id="getQuestionListByCourseId" resultType="map">
+        select * from ${type}
+        where course_id = #{courseId}
+    </select>
+    <insert id="insertTable">
+        insert into zgt
+        (course_id, title, answer)
+        value
+        (#{q}, #{w}, #{e})
+    </insert>
+    <select id="checkExp" resultType="int">
+        select count(*) from experience
+        where user_id = #{user_id} and question_id = #{id}
+    </select>
+    <insert id="insertExp">
+        insert into experience
+        (user_id, question_type, question_id, choice, answer, course_id)
+        value
+        (#{user_id}, #{type}, #{id}, #{choice}, #{answer}, #{course_id})
+    </insert>
+    <select id="getExpList" resultType="map">
+        select * from experience
+        where user_id = #{id} and course_id = #{courseId} and question_type = #{type}
+    </select>
+    <delete id="deleteExp">
+        delete from experience
+        where question_id = #{id}
+    </delete>
+</mapper>

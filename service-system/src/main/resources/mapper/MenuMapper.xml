@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nayst.system.mapper.MenuMapper">
+    <resultMap id="menuMap" type="com.nayst.model.system.Menu" autoMapping="true"></resultMap>
+    <select id="findMenuListByUserRole" resultMap="menuMap">
+        select * from menu where role = #{role}
+        and status = 1
+        and is_deleted = 0
+    </select>
+</mapper>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nayst.system.mapper.TeacherMapper">
+    <select id="getCourseIdByTeacherId" resultType="String">
+        select course_id from teacher
+        where user_id = #{id}
+        and is_deleted = 0
+    </select>
+    <select id="getQuestionList" resultType="map">
+        select * from ${questionType}
+        <where>
+            course_id = #{courseId} and is_deleted = 0
+            <if test="questionName != null and questionName != ''">
+                and title like concat('%', #{questionName}, '%')
+            </if>
+        </where>
+    </select>
+    <insert id="addXZT">
+        insert into xzt
+        (course_id, title, a, b, c, d, answer, score)
+        value
+        (#{course_id}, #{title}, #{a}, #{b}, #{c}, #{d}, #{answer}, #{score})
+    </insert>
+    <insert id="addPDT">
+        insert into pdt
+        (course_id, title, a, b, answer, score)
+        value
+        (#{course_id}, #{title}, #{a}, #{b}, #{answer}, #{score})
+    </insert>
+    <insert id="addTKT">
+        insert into tkt
+        (course_id, title, answer, score)
+        value
+        (#{course_id}, #{title}, #{answer}, #{score})
+    </insert>
+    <insert id="insertZGT">
+        insert into zgt
+        (course_id, title, answer, score)
+        value
+        (#{course_id}, #{title}, #{answer}, #{answer})
+    </insert>
+    <update id="deleteQuestion">
+        update ${type} set is_deleted = 1
+        where id = #{id} and course_id = #{course_id}
+        and is_deleted = 0;
+    </update>
+    <select id="getExamListByCourseId" resultType="map">
+        select * from exam
+        where course_id = #{courseId}
+        and is_deleted = 0 and status = 1
+    </select>
+    <insert id="addExam">
+        insert into exam
+        (name, course_id, paper_id, start_time, end_time)
+        value
+        (#{name}, #{course_id}, #{paper_id}, #{start_time}, #{end_time})
+    </insert>
+    <update id="deleteExam">
+        update exam set is_deleted = 1
+        where id = #{id} and course_id = #{course_id}
+        and is_deleted = 0;
+    </update>
+    <select id="getPaperIdListByCourseId" resultType="map">
+        select * from paper
+        where course_id = #{course_id}
+        and status = 1 and is_deleted = 0
+    </select>
+    <select id="getQuestionById" resultType="map">
+        select * from ${type}
+        where id = #{questionId}
+        and is_deleted = 0
+    </select>
+    <insert id="addPaper">
+        insert into paper
+        (course_id,
+         xzt_id_1, xzt_id_2, xzt_id_3, xzt_id_4, xzt_id_5,
+         tkt_id_1, tkt_id_2, tkt_id_3, tkt_id_4, tkt_id_5,
+         pdt_id_1, pdt_id_2, pdt_id_3, pdt_id_4, pdt_id_5,
+         zgt_id_1, zgt_id_2)
+        value
+        (#{course_id},
+         #{xzt_id_1}, #{xzt_id_2}, #{xzt_id_3}, #{xzt_id_4}, #{xzt_id_5},
+         #{tkt_id_1}, #{tkt_id_2}, #{tkt_id_3}, #{tkt_id_4}, #{tkt_id_5},
+         #{pdt_id_1}, #{pdt_id_2}, #{pdt_id_3}, #{pdt_id_4}, #{pdt_id_5},
+         #{zgt_id_1}, #{zgt_id_2})
+    </insert>
+    <update id="deletePaper">
+        update paper set is_deleted = 1
+        where id = #{id}
+        and is_deleted = 0;
+    </update>
+    <select id="getUserListByCourseId" resultType="String">
+        select user_id from student_course
+        where course_id = #{courseId}
+        and is_deleted = 0
+    </select>
+    <select id="getUserInfoById" resultType="map">
+        select * from user
+        where id = #{userId}
+        and is_deleted = 0
+    </select>
+    <select id="getAnswerList" resultType="map">
+        select * from answer
+        where paper_id = #{paperId} and user_id = #{userId}
+    </select>
+    <update id="updateGrade">
+        update answer set grade = #{grade}
+        where id = #{id}
+    </update>
+    <select id="getGradeList" resultType="String">
+        select grade from answer
+        where paper_id = #{paperId} and user_id = #{userId}
+    </select>
+    <select id="getStuInfoById" resultType="map">
+        select * from student
+        where user_id = #{userId}
+        and is_deleted = 0
+    </select>
+    <select id="getSumGrade" resultType="String">
+        SELECT sum(grade) FROM answer
+        where paper_id = #{paperId} and user_id = #{id}
+    </select>
+    <select id="getCourseIdByStudentId" resultType="String">
+        SELECT course_id FROM student_course
+        where user_id = #{id}
+    </select>
+</mapper>
