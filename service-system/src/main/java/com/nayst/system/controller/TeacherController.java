@@ -58,23 +58,25 @@ public class TeacherController {
     }
 
     @PostMapping("/addQuestion")
-    public Result addQuestion(@RequestBody QuestionVo questionVo){
-        List<String> typeList = new ArrayList<>();
-        typeList.add("xzt");
-        typeList.add("pdt");
-        typeList.add("tkt");
-        typeList.add("zgt");
-        if ( !Arrays.asList(typeList).contains(questionVo.getType()) )
-            throw new MyException(20001, "Invalid type");
+    public Result addQuestion(HttpServletRequest req,@RequestBody QuestionVo questionVo){
+        //从请求头中获取token
+        String token = req.getHeader("token");
+        //从token中获取用户id
+        String id = JwtHelper.getUserId(token);
+        String courseId = teacherService.getCourseIdByTeacherId(id);
+        questionVo.setCourse_id(courseId);
         teacherService.addQuestion(questionVo);
         return Result.ok();
     }
 
     @PostMapping("/updateQuestion")
-    public Result updateQuestion(@RequestBody QuestionVo questionVo){
-        String[] typeList = {"xzt", "pdt", "tkt", "zgt"};
-        if ( !Arrays.asList(typeList).contains(questionVo.getType()) )
-            throw new MyException(20001, "Invalid type");
+    public Result updateQuestion(HttpServletRequest req,@RequestBody QuestionVo questionVo){
+        //从请求头中获取token
+        String token = req.getHeader("token");
+        //从token中获取用户id
+        String id = JwtHelper.getUserId(token);
+        String courseId = teacherService.getCourseIdByTeacherId(id);
+        questionVo.setCourse_id(courseId);
         teacherService.deleteQuestion(questionVo);
         teacherService.addQuestion(questionVo);
         return Result.ok();
@@ -82,9 +84,9 @@ public class TeacherController {
 
     @PostMapping("/deleteQuestion")
     public Result deleteQuestion(@RequestBody QuestionVo questionVo){
-        String[] typeList = {"xzt", "pdt", "tkt", "zgt"};
-        if ( !Arrays.asList(typeList).contains(questionVo.getType()) )
-            throw new MyException(20001, "Invalid type");
+        //String[] typeList = {"xzt", "pdt", "tkt", "zgt"};
+        //if ( !Arrays.asList(typeList).contains(questionVo.getType()) )
+        //    throw new MyException(20001, "Invalid type");
         teacherService.deleteQuestion(questionVo);
         return Result.ok();
     }
@@ -143,7 +145,14 @@ public class TeacherController {
     }
 
     @PostMapping("/addPaper")
-    public Result addPaper(@RequestBody PaperVo paperVo) {
+    public Result addPaper(HttpServletRequest req,
+                           @RequestBody PaperVo paperVo) {
+        //从请求头中获取token
+        String token = req.getHeader("token");
+        //从token中获取用户id
+        String id = JwtHelper.getUserId(token);
+        String courseId = teacherService.getCourseIdByTeacherId(id);
+        paperVo.setCourse_id(courseId);
         teacherService.addPaper(paperVo);
         return Result.ok();
     }
